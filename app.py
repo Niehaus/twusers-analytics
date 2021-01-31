@@ -18,16 +18,14 @@ authorize_url = 'https://api.twitter.com/oauth/authorize'
 show_user_url = 'https://api.twitter.com/1.1/users/show.json'
 
 # Support keys from environment vars (Heroku).
-app.config['APP_CONSUMER_KEY'] = os.getenv(
-    'TWAUTH_APP_CONSUMER_KEY', 'API_Key_from_Twitter')
-app.config['APP_CONSUMER_SECRET'] = os.getenv(
-    'TWAUTH_APP_CONSUMER_SECRET', 'API_Secret_from_Twitter')
-
+app.config['APP_CONSUMER_KEY'] = os.getenv('APP_CONSUMER_KEY')
+app.config['APP_CONSUMER_SECRET'] = os.getenv('APP_CONSUMER_SECRET')
+app.config['APP_BEARER_TOKEN'] = os.getenv('APP_BEARER_TOKEN')
 # alternatively, add your key and secret to config.cfg
 # config.cfg should look like:
 # APP_CONSUMER_KEY = 'API_Key_from_Twitter'
 # APP_CONSUMER_SECRET = 'API_Secret_from_Twitter'
-app.config.from_pyfile('config.cfg', silent=True)
+# app.config.from_pyfile('config.cfg', silent=True)
 
 oauth_store = {}
 
@@ -85,6 +83,7 @@ def start():
     oauth_token_secret = request_token[b'oauth_token_secret'].decode('utf-8')
 
     oauth_store[oauth_token] = oauth_token_secret
+
     return render_template('start.html', authorize_url=authorize_url, oauth_token=oauth_token,
                            request_token_url=request_token_url)
 
