@@ -1,0 +1,36 @@
+/* Custom css for the application */
+
+:root {
+
+
+    /* Color variables */
+    --roman-silver: hsla(249, 5%, 54%, 1);
+    --old-lavender: hsla(247, 8%, 44%, 1);
+    --black-coral: hsla(210, 15%, 38%, 1);
+    --charcoal: hsla(214, 21%, 31%, 1);
+    --prussian-blue: hsla(215, 32%, 25%, 1);
+    --celadon-blue: hsla(201, 43%, 45%, 1);
+
+    /* Twitter colors */
+    --color-faint: #f5f8fa;
+    --color-darkest-gray: #657786; /* font color for general stuff*/
+    --twitter-blue: #1da1f2;
+    --twitter-black: #14171a;
+    --color-deep-gray: #657786; /* deactivated things*/
+    --color-dark-gray-blue: #192734; /* twitter almost navy blue*/
+}
+
+body {
+    color: var(--color-darkest-gray);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--twitter-black);
+}
+
+.index-card {
+    background-color: var(--color-faint);
+    color: var(--color-darkest-gray);
+    border: none;
+}
+

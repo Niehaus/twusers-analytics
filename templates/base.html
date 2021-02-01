@@ -2,22 +2,33 @@
 <html lang="en">
 
 <head>
-	<title>twauth-web sample app {% block title %}{% endblock %}</title>
+	<title>Twitter Usage Analitycs{% block title %}{% endblock %}</title>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
 </head>
 
 <body>
 	<div class="container">
-		<h1>twauth-web</h1>
+		<h1 class="text-center">Twitter Usage Analitycs</h1>
 		{% block containercontent %}{% endblock %}
 		<hr>
 		<div class="footer">
-			<p class="text-muted"><small>This is a basic demo created by the <a href="https://twitter.com/TwitterDev">@TwitterDev</a>
-					team. It is written in Python, using <a href="http://flask.pocoo.org/">Flask</a>
-					and <a href="https://github.com/simplegeo/python-oauth2">python-oauth2</a>. Basic CSS is provided by <a href="http://getbootstrap.com/">Bootstrap</a>.
-					The source code for this project can be found at <a href="https://github.com/twitterdev/twauth-web">github/twitterdev/twauth-web</a>.</small></p>
+			<p class="text-muted" style="text-align: center;">
+                <small>Site criado para discplina de Redes Complexas escrito em Python, utilizando
+                    <a href="http://flask.pocoo.org/">Flask</a>, <a href="http://getbootstrap.com/">Bootstrap</a> e
+                    <a href="https://github.com/simplegeo/python-oauth2">python-oauth2</a> com base no projeto
+                    <a href="https://github.com/twitterdev/twauth-web">github/twitterdev/twauth-web</a>.
+                    <br>
+                    Código Oficial deste projeto em
+                    <a href="https://github.com/niehaus/twusers-analytics">github/niehaus/twusers-analytics</a>.
+                </small>
+            </p>
 		</div>
 	</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+            crossorigin="anonymous">
+    </script>
 </body>
 
 </html>
