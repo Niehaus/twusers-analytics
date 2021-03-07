@@ -2,14 +2,15 @@
 <html lang="en">
 
 <head>
-	<title>Twitter Usage Analitycs{% block title %}{% endblock %}</title>
+	<title>Should We Be Friends?{% block title %}{% endblock %}</title>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='media_queries.css') }}">
 </head>
 
 <body>
-	<div class="container">
-		<h1 class="text-center">Twitter Usage Analitycs</h1>
+	<div class="container mt-4">
+		<h1 class="text-center">Should We Be Friends?</h1>
 		{% block containercontent %}{% endblock %}
 		<hr>
 		<div class="footer">

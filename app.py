@@ -9,7 +9,7 @@ import oauth2 as oauth
 from flask import Flask, render_template, request, url_for
 
 app = Flask(__name__)
-
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.debug = True
 
 request_token_url = 'https://api.twitter.com/oauth/request_token'
@@ -25,7 +25,7 @@ app.config['APP_BEARER_TOKEN'] = os.getenv('APP_BEARER_TOKEN')
 # config.cfg should look like:
 # APP_CONSUMER_KEY = 'API_Key_from_Twitter'
 # APP_CONSUMER_SECRET = 'API_Secret_from_Twitter'
-# app.config.from_pyfile('config.cfg', silent=True)
+app.config.from_pyfile('config.cfg', silent=True)
 
 oauth_store = {}
 
@@ -85,7 +85,7 @@ def start():
     oauth_store[oauth_token] = oauth_token_secret
 
     return render_template('start.html', authorize_url=authorize_url, oauth_token=oauth_token,
-                           request_token_url=request_token_url)
+                           request_token_url=request_token_url, message='hello guys')
 
 
 @app.route('/callback')
