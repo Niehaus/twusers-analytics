@@ -44,6 +44,25 @@
     {#        data any longer, we've deleted our local copy of your token. You can be extra safe and revoke our token from#}
     {#        your <a#}
     {#                href="https://twitter.com/settings/applications">account settings</a> on Twitter.</p>#}
-    <a href="/" class="btn btn-small btn-primary">Tentar novamente</a>
+    <hr>
+    <h3>Procure Amizades</h3>
+    <p>Digite o @ ou nome de usuário de alguém que você gostaria de ser amigo, vamos tentar dizer
+        quantos % vocês são compatíveis baseado nas suas redes de amigos do Twitter.</p>
+    <div class="row justify-content-center">
+        <form class="form-inline">
+            <div class="form-group mb-2">
+                <label for="staticName" class="sr-only">Name</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticName" value="{{ name }}">
+            </div>
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="inputFriendName" class="sr-only">Nome do amigo</label>
+                <input type="text" class="form-control" id="inputFriendName" placeholder="Nome do amigo">
+            </div>
+            <button type="submit" class="btn btn-primary mb-2">Ver Match</button>
+        </form>
+    </div>
+
+    <hr>
+{#    <a href="/" class="btn btn-small btn-primary">Tentar novamente</a>#}
     {#    <hr>#}
 {% endblock %}
