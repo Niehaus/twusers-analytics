@@ -3,9 +3,9 @@ import os
 import urllib.error
 import urllib.parse
 import urllib.request
-import requests
 
 import oauth2 as oauth
+import requests
 from flask import Flask, render_template, request, url_for
 
 app = Flask(__name__)
@@ -21,6 +21,7 @@ show_user_url = 'https://api.twitter.com/1.1/users/show.json'
 app.config['APP_CONSUMER_KEY'] = os.getenv('APP_CONSUMER_KEY')
 app.config['APP_CONSUMER_SECRET'] = os.getenv('APP_CONSUMER_SECRET')
 app.config['APP_BEARER_TOKEN'] = os.getenv('APP_BEARER_TOKEN')
+# app.config['APP_BEARER_TOKEN'] = 'os.getenv('APP_BEARER_TOKEN')'
 # alternatively, add your key and secret to config.cfg
 # config.cfg should look like:
 # APP_CONSUMER_KEY = 'API_Key_from_Twitter'
@@ -28,6 +29,7 @@ app.config['APP_BEARER_TOKEN'] = os.getenv('APP_BEARER_TOKEN')
 app.config.from_pyfile('config.cfg', silent=True)
 
 oauth_store = {}
+user_followers = {}
 
 
 @app.route('/')
@@ -51,11 +53,14 @@ def connect_to_endpoint(url, headers, params):
 def custompage():
     bearer_token = app.config['APP_BEARER_TOKEN']
     headers = {"Authorization": "Bearer {}".format(bearer_token)}
-    user_id = 2244994945
+    get_user_id_url = f'https://api.twitter.com/2/users/by/username/yayboechat'
+    json_response = connect_to_endpoint(get_user_id_url, headers, params={})
+
+    user_id = json_response['data']['id']
     url = f'https://api.twitter.com/2/users/{user_id}/following?max_results=10'
     params = {"user.fields": "created_at"}
     json_response = connect_to_endpoint(url, headers, params)
-    # print(json.dumps(json_response, indent=4, sort_keys=True))
+    print(json.dumps(json_response, indent=4, sort_keys=True))
 
     return render_template('custompage.html')
 
@@ -156,6 +161,36 @@ def callback():
     return render_template('callback-success.html', screen_name=screen_name, user_id=user_id, name=name,
                            friends_count=friends_count, statuses_count=statuses_count,
                            followers_count=followers_count, access_token_url=access_token_url)
+
+
+looked_id = []
+
+
+@app.route('/postmethod', methods=['POST', 'GET'])
+def get_post_javascript_data():
+    bearer_token = app.config['APP_BEARER_TOKEN']
+    headers = {"Authorization": "Bearer {}".format(bearer_token)}
+    if request.method == 'POST':
+        jsdata_username = request.form['javascript_data']
+        get_user_id_url = f'https://api.twitter.com/2/users/by/username/{jsdata_username}'
+        user_lookup_info = connect_to_endpoint(get_user_id_url, headers, params={})
+        looked_id.append(user_lookup_info['data']['id'])
+    else:
+        user_id = looked_id[-1]
+        url = f'https://api.twitter.com/2/users/{user_id}/following?max_results=10'
+        params = {"user.fields": "created_at"}
+        json_get_response = connect_to_endpoint(url, headers, params)
+
+        return json_get_response
+
+    return user_lookup_info
+
+
+@app.route('/getpythondata')
+def get_python_data():
+    global user_followers
+
+    return json.dumps(user_followers)
 
 
 @app.errorhandler(500)

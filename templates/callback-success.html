@@ -58,11 +58,41 @@
                 <label for="inputFriendName" class="sr-only">Nome do amigo</label>
                 <input type="text" class="form-control" id="inputFriendName" placeholder="Nome do amigo">
             </div>
-            <button type="submit" class="btn btn-primary mb-2">Ver Match</button>
         </form>
+        <button class="btn btn-primary mb-2" onclick="post_name()">Ver Match</button>
     </div>
+    <div class="row justify-content-center">
+        <div class="card index-card m-3">
+            <div class="card-body">
+                <h5 class="card-title text-center">{{ name }}</h5>
+                <p id="info-retrieve">
 
+                </p>
+            </div>
+        </div>
+    </div>
     <hr>
-{#    <a href="/" class="btn btn-small btn-primary">Tentar novamente</a>#}
+    <a href="/" class="btn btn-small btn-primary">Tentar novamente</a>
     {#    <hr>#}
+    <script>
+        function post_name() {
+            let friend_input = $('#inputFriendName')
+            console.log(friend_input.val())
+            console.log('aqui porra')
+            if (friend_input.val()) {
+                $.post("/postmethod", {
+                    javascript_data: friend_input.val()
+                }).done(function () {
+                    console.log('know we get?')
+                    $.get("/postmethod", function (data) {
+                        {#console.log($.parseJSON(data))#}
+                        console.log(data)
+                    })
+                });
+            }
+            friend_input.val('');
+
+
+        }
+    </script>
 {% endblock %}
