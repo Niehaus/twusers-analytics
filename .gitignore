@@ -132,3 +132,5 @@ dmypy.json
 .idea/
 .gitsecret/keys/random_seed
 config.cfg
+# Flask sessions ignore
+/*_session/

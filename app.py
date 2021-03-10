@@ -6,11 +6,16 @@ import urllib.request
 
 import oauth2 as oauth
 import requests
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request, url_for, session
+from flask_session.__init__ import Session
 
 app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.debug = True
+
+SESSION_TYPE = 'filesystem'
+app.config.from_object(__name__)
+Session(app)
 
 request_token_url = 'https://api.twitter.com/oauth/request_token'
 access_token_url = 'https://api.twitter.com/oauth/access_token'
@@ -156,6 +161,7 @@ def callback():
     name = response['name']
 
     # don't keep this token and secret in memory any longer
+    session['own_id'] = user_id
     del oauth_store[oauth_token]
 
     return render_template('callback-success.html', screen_name=screen_name, user_id=user_id, name=name,
@@ -166,7 +172,7 @@ def callback():
 looked_id = []
 
 
-@app.route('/postmethod', methods=['POST', 'GET'])
+@app.route('/friendaction', methods=['POST', 'GET'])
 def get_post_javascript_data():
     bearer_token = app.config['APP_BEARER_TOKEN']
     headers = {"Authorization": "Bearer {}".format(bearer_token)}
@@ -177,20 +183,38 @@ def get_post_javascript_data():
         looked_id.append(user_lookup_info['data']['id'])
     else:
         user_id = looked_id[-1]
-        url = f'https://api.twitter.com/2/users/{user_id}/following?max_results=10'
+        url = f'https://api.twitter.com/2/users/{user_id}/following?max_results=100'
         params = {"user.fields": "created_at"}
         json_get_response = connect_to_endpoint(url, headers, params)
+        json_get_response['main_node'] = {
+            "user_id": user_id,
+        }
+
+        print('rede do amigo')
+        print(json.dumps(json_get_response, indent=4, sort_keys=True))
 
         return json_get_response
 
     return user_lookup_info
 
 
-@app.route('/getpythondata')
-def get_python_data():
-    global user_followers
+own_id = ""
 
-    return json.dumps(user_followers)
+
+@app.route('/selfnetaction', methods=['GET'])
+def get_selfnet():
+    bearer_token = app.config['APP_BEARER_TOKEN']
+    headers = {"Authorization": "Bearer {}".format(bearer_token)}
+
+    user_id = session.get('own_id')
+    url = f'https://api.twitter.com/2/users/{user_id}/following?max_results=100'
+    params = {"user.fields": "created_at"}
+    json_get_response = connect_to_endpoint(url, headers, params)
+    json_get_response['main_node'] = {
+        "user_id": user_id,
+    }
+
+    return json_get_response
 
 
 @app.errorhandler(500)
@@ -199,4 +223,7 @@ def internal_server_error(e):
 
 
 if __name__ == '__main__':
+    sess = Session()
+    sess.init_app(app)
+
     app.run(use_reloader=True)

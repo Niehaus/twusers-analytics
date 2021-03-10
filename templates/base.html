@@ -2,35 +2,41 @@
 <html lang="en">
 
 <head>
-	<title>Should We Be Friends?{% block title %}{% endblock %}</title>
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <title>Should We Be Friends?{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+            integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='media_queries.css') }}">
 </head>
 
 <body>
-	<div class="container mt-4">
-		<h1 class="text-center">Should We Be Friends?</h1>
-		{% block containercontent %}{% endblock %}
-		<hr>
-		<div class="footer">
-			<p class="text-muted" style="text-align: center;">
-                <small>Site criado para discplina de Redes Complexas escrito em Python, utilizando
-                    <a href="http://flask.pocoo.org/">Flask</a>, <a href="http://getbootstrap.com/">Bootstrap</a> e
-                    <a href="https://github.com/simplegeo/python-oauth2">python-oauth2</a> com base no projeto
-                    <a href="https://github.com/twitterdev/twauth-web">github/twitterdev/twauth-web</a>.
-                    <br>
-                    Código Oficial deste projeto em
-                    <a href="https://github.com/niehaus/twusers-analytics">github/niehaus/twusers-analytics</a>.
-                </small>
-            </p>
-		</div>
-	</div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
-            crossorigin="anonymous">
-    </script>
+<div class="container mt-4">
+    <h1 class="text-center">Should We Be Friends?</h1>
+    {% block containercontent %}{% endblock %}
+    <hr>
+    <div class="footer">
+        <p class="text-muted" style="text-align: center;">
+            <small>Site criado para discplina de Redes Complexas escrito em Python, utilizando
+                <a href="http://flask.pocoo.org/">Flask</a>, <a href="http://getbootstrap.com/">Bootstrap</a> e
+                <a href="https://github.com/simplegeo/python-oauth2">python-oauth2</a> com base no projeto
+                <a href="https://github.com/twitterdev/twauth-web">github/twitterdev/twauth-web</a>.
+                <br>
+                Código Oficial deste projeto em
+                <a href="https://github.com/niehaus/twusers-analytics">github/niehaus/twusers-analytics</a>.
+            </small>
+        </p>
+    </div>
+</div>
+
+<script type="text/javascript" src="https://unpkg.com/vis-data@latest/peer/umd/vis-data.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/vis-network@latest/peer/umd/vis-network.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/vis-network/styles/vis-network.min.css"/>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+        crossorigin="anonymous">
+</script>
 </body>
 
 </html>

@@ -18,6 +18,11 @@
     --twitter-black: #14171a;
     --color-deep-gray: #657786; /* deactivated things*/
     --color-dark-gray-blue: #192734; /* twitter almost navy blue*/
+
+    /* Graph colors */
+    --main-node: #D0021B;
+    --friends-node: #4A90E2;
+    --fof-node: #50E3C2;
 }
 
 body {

@@ -61,13 +61,23 @@
         </form>
         <button class="btn btn-primary mb-2" onclick="post_name()">Ver Match</button>
     </div>
-    <div class="row justify-content-center">
-        <div class="card index-card m-3">
-            <div class="card-body">
-                <h5 class="card-title text-center">{{ name }}</h5>
-                <p id="info-retrieve">
-
-                </p>
+    <div id="network-show" class="row justify-content-center d-none">
+        <div class="col-lg-6">
+            <div class="card index-card m-3">
+                <div class="card-body">
+                    <h5 class="card-title text-center">{{ name }}</h5>
+                    <div id="owner_network" style="height: 400px"></div>
+                    <p id="owner"></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card index-card m-3">
+                <div class="card-body">
+                    <h5 id="friend-name" class="card-title text-center"></h5>
+                    <div id="friendnt" style="height: 400px"></div>
+                    <p id="owners-friend"></p>
+                </div>
             </div>
         </div>
     </div>
@@ -77,22 +87,103 @@
     <script>
         function post_name() {
             let friend_input = $('#inputFriendName')
-            console.log(friend_input.val())
-            console.log('aqui porra')
+
             if (friend_input.val()) {
-                $.post("/postmethod", {
+                $.post("/friendaction", {
                     javascript_data: friend_input.val()
                 }).done(function () {
                     console.log('know we get?')
-                    $.get("/postmethod", function (data) {
-                        {#console.log($.parseJSON(data))#}
-                        console.log(data)
+                    $.get("/friendaction", function (data) {
+                        mount_graph(data, 'friendnt')
                     })
                 });
             }
+
+            $.get("/selfnetaction", function (data) {
+                mount_graph(data, 'owner_network')
+            })
+            $('#network-show').removeClass('d-none')
+            $('#friend-name').text(friend_input.val())
             friend_input.val('');
+        }
+
+        function mount_graph(data_retrieved, element) {
+            let nodes_content = data_retrieved['data'],
+                main_node = data_retrieved['main_node']['user_id'],
+                colors = {
+                    main_node: '#D0021B',
+                    friends_node: '#4A90E2',
+                    fof_node: '#50E3C2'
+                }
+
+            /* Define nodes */
+            let vis_nodes = [],
+                vis_edges = []
+
+            console.log('the main node' + main_node)
+            vis_nodes.push(
+                {
+                    id: main_node,
+                    color: {background: colors.main_node}
+                }
+            )
+            nodes_content.forEach(node_content => {
+                let node = {
+                    id: node_content['id'],
+                    color: {
+                        background: colors.friends_node
+                    }
+                }
+
+                let edge = {
+                    from: main_node,
+                    to: node.id
+                }
+                vis_nodes.push(node)
+                vis_edges.push(edge)
+            });
 
 
+            let nodes = new vis.DataSet(vis_nodes)
+            let edges = new vis.DataSet(vis_edges)
+
+            // create a network
+            let container = document.getElementById(element);
+            let data = {
+                nodes: nodes,
+                edges: edges,
+            };
+            // Define options for the graphs
+            let options = {
+                autoResize: true,
+                height: '100%',
+                width: '100%',
+                edges: {
+                    arrowStrikethrough: true,
+                    color: 'black',
+
+                },
+                nodes: {
+                    color: {
+                        border: 'black'
+                    }
+                },
+                interaction: {
+                    dragNodes: false,
+                    dragView: false,
+                    zoomView: false,
+
+                },
+                physics: false,
+
+            };
+            let network = new vis.Network(container, data, options);
+
+            {#layout: {#}
+            {#       hierarchical: {#}
+            {#           direction: 'UD'#}
+            {#       }#}
+            {#   }#}
         }
     </script>
 {% endblock %}
