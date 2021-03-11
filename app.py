@@ -7,15 +7,15 @@ import urllib.request
 import oauth2 as oauth
 import requests
 from flask import Flask, render_template, request, url_for, session
-from flask_session.__init__ import Session
+# from flask_session.__init__ import Session
 
 app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.debug = True
 
-SESSION_TYPE = 'filesystem'
-app.config.from_object(__name__)
-Session(app)
+# SESSION_TYPE = 'filesystem'
+# app.config.from_object(__name__)
+# Session(app)
 
 request_token_url = 'https://api.twitter.com/oauth/request_token'
 access_token_url = 'https://api.twitter.com/oauth/access_token'
@@ -35,7 +35,7 @@ app.config.from_pyfile('config.cfg', silent=True)
 
 oauth_store = {}
 user_followers = {}
-
+user_info = {}
 
 @app.route('/')
 def hello():
@@ -161,7 +161,8 @@ def callback():
     name = response['name']
 
     # don't keep this token and secret in memory any longer
-    session['own_id'] = user_id
+    # session['own_id'] = user_id
+    user_info['own_id'] = user_id
     del oauth_store[oauth_token]
 
     return render_template('callback-success.html', screen_name=screen_name, user_id=user_id, name=name,
@@ -206,7 +207,8 @@ def get_selfnet():
     bearer_token = app.config['APP_BEARER_TOKEN']
     headers = {"Authorization": "Bearer {}".format(bearer_token)}
 
-    user_id = session.get('own_id')
+    # user_id = session.get('own_id')
+    user_id = user_info['own_id']
     url = f'https://api.twitter.com/2/users/{user_id}/following?max_results=100'
     params = {"user.fields": "created_at"}
     json_get_response = connect_to_endpoint(url, headers, params)
@@ -223,7 +225,7 @@ def internal_server_error(e):
 
 
 if __name__ == '__main__':
-    sess = Session()
-    sess.init_app(app)
+    # sess = Session()
+    # sess.init_app(app)
 
     app.run(use_reloader=True)
