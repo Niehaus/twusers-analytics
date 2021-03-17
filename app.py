@@ -6,7 +6,8 @@ import urllib.request
 
 import oauth2 as oauth
 import requests
-from flask import Flask, render_template, request, url_for, session
+from flask import Flask, render_template, request, url_for
+
 # from flask_session.__init__ import Session
 
 app = Flask(__name__)
@@ -36,6 +37,7 @@ app.config.from_pyfile('config.cfg', silent=True)
 oauth_store = {}
 user_followers = {}
 user_info = {}
+
 
 @app.route('/')
 def hello():
@@ -184,15 +186,17 @@ def get_post_javascript_data():
         looked_id.append(user_lookup_info['data']['id'])
     else:
         user_id = looked_id[-1]
-        url = f'https://api.twitter.com/2/users/{user_id}/following?max_results=100'
+        url = f'https://api.twitter.com/2/users/{user_id}/following?max_results=5'
         params = {"user.fields": "created_at"}
         json_get_response = connect_to_endpoint(url, headers, params)
         json_get_response['main_node'] = {
             "user_id": user_id,
         }
-
-        print('rede do amigo')
-        print(json.dumps(json_get_response, indent=4, sort_keys=True))
+        #
+        # print('rede do amigo')
+        #
+        # print(json_get_response['data'][0])
+        # print(json.dumps(json_get_response, indent=4, sort_keys=True))
 
         return json_get_response
 
@@ -209,12 +213,26 @@ def get_selfnet():
 
     # user_id = session.get('own_id')
     user_id = user_info['own_id']
-    url = f'https://api.twitter.com/2/users/{user_id}/following?max_results=100'
+    url = f'https://api.twitter.com/2/users/{user_id}/following?max_results=5'
     params = {"user.fields": "created_at"}
     json_get_response = connect_to_endpoint(url, headers, params)
     json_get_response['main_node'] = {
         "user_id": user_id,
     }
+
+    return json_get_response
+
+
+@app.route('/nextnet', methods=['GET'])
+def get_nextnet():
+    bearer_token = app.config['APP_BEARER_TOKEN']
+    headers = {"Authorization": "Bearer {}".format(bearer_token)}
+
+    user_id = request.args.get('user_id')
+    url = f'https://api.twitter.com/2/users/{user_id}/following?max_results=5'
+    print(url)
+    params = {"user.fields": "created_at"}
+    json_get_response = connect_to_endpoint(url, headers, params)
 
     return json_get_response
 

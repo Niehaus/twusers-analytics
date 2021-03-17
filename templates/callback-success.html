@@ -83,32 +83,144 @@
     </div>
     <hr>
     <a href="/" class="btn btn-small btn-primary">Tentar novamente</a>
+
     {#    <hr>#}
     <script>
+         let network = {
+            nodes: [],
+            edges: [],
+        }
+
+
+        let colors = {
+            main_node: '#D0021B',
+            friends_node: '#4A90E2',
+            fof_node: '#50E3C2'
+        }
+
+
         function post_name() {
-            let friend_input = $('#inputFriendName')
+            let friend_input = $('#inputFriendName');
 
             if (friend_input.val()) {
                 $.post("/friendaction", {
                     javascript_data: friend_input.val()
                 }).done(function () {
-                    console.log('know we get?')
                     $.get("/friendaction", function (data) {
-                        mount_graph(data, 'friendnt')
-                    })
+                        {#mount_graph(data, 'friendnt')#}
+                        mount_hop1(data);
+                    }).done(function () {
+                        mount_hops();
+                    });
                 });
             }
 
-            $.get("/selfnetaction", function (data) {
+            mount_draw_of_graph();
+            /*$.get("/selfnetaction", function (data) {
                 mount_graph(data, 'owner_network')
-            })
+            })*/
             $('#network-show').removeClass('d-none')
             $('#friend-name').text(friend_input.val())
             friend_input.val('');
+            {#mount_draw_of_graph()#}
         }
 
-        function mount_graph(data_retrieved, element) {
+        function mount_hop1(data_retrieved) {
             let nodes_content = data_retrieved['data'],
+                main_node = data_retrieved['main_node']['user_id']
+
+
+            /* Define nodes */
+
+
+            console.log('the main node' + main_node)
+            network.nodes.push(
+                {
+                    id: main_node,
+                    color: {background: colors.main_node}
+                }
+            )
+            nodes_content.forEach(node_content => {
+                let node = {
+                    id: node_content['id'],
+                    color: {
+                        background: colors.friends_node
+                    }
+                }
+
+                let edge = {
+                    from: main_node,
+                    to: node.id
+                }
+                network.nodes.push(node)
+                network.edges.push(edge)
+            });
+
+            console.log(network)
+        }
+
+        function mount_hops() {
+            /* Define nodes */
+
+            /*$.get("/nextnet", {user_id: 172157633}, function (data) {
+
+
+
+
+            {#mount_graph(data, 'friendnt')#}
+                console.log(data)
+            })*/
+            console.log('COMEÇOU', network.nodes)
+            network.nodes.forEach(ntw_node => {
+                console.log(ntw_node.id)
+            })
+            let node = {}
+            let edge = {}
+            network.nodes.forEach(ntw_node => {
+                $.get("/nextnet", {user_id: ntw_node.id}, function (data) {
+                    console.log(ntw_node.id, data['data'])
+                    let fof_nodes = data['data']
+                    fof_nodes.forEach(fof => {
+                        if (!network.nodes.includes(fof)) {
+                            node = {
+                                id: ntw_node['id'],
+                                color: {
+                                    background: colors.fof_node
+                                }
+                            }
+                            network.nodes.push(node)
+                        }
+
+                        edge = {
+                            from: ntw_node.id,
+                            to: fof.id
+                        }
+                        network.edges.push(edge)
+                    });
+                }).fail(function () {
+                    console.log('falhei')
+                });
+                /*let node = {
+                    id: ntw_node['id'],
+                    color: {
+                        background: colors.friends_node
+                    }
+                }
+
+                let edge = {
+                    from: main_node,
+                    to: node.id
+                }
+                network.nodes.push(node)
+                network.edges.push(edge)*/
+            });
+            console.log(network)
+
+        }
+
+        /* botar sleep de 200ms entre cada requisição */
+        function mount_draw_of_graph() {
+            /*let nodes_content = data_retrieved['data'],
                 main_node = data_retrieved['main_node']['user_id'],
                 colors = {
                     main_node: '#D0021B',
@@ -116,7 +228,7 @@
                     fof_node: '#50E3C2'
                 }
 
-            /* Define nodes */
+            /* Define nodes
             let vis_nodes = [],
                 vis_edges = []
 
@@ -141,14 +253,14 @@
                 }
                 vis_nodes.push(node)
                 vis_edges.push(edge)
-            });
+            });*/
 
 
-            let nodes = new vis.DataSet(vis_nodes)
-            let edges = new vis.DataSet(vis_edges)
+            let nodes = new vis.DataSet(network.nodes)
+            let edges = new vis.DataSet(network.edges)
 
             // create a network
-            let container = document.getElementById(element);
+            let container = document.getElementById('friendnt');
             let data = {
                 nodes: nodes,
                 edges: edges,
@@ -177,7 +289,7 @@
                 physics: false,
 
             };
-            let network = new vis.Network(container, data, options);
+            let network_mount = new vis.Network(container, data, options);
 
             {#layout: {#}
             {#       hierarchical: {#}
