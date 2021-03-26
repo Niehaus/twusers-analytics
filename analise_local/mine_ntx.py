@@ -11,19 +11,38 @@ import copy
 from time import sleep
 
 
-def connect_to_endpoint(url, headers, params):
+def connect_to_endpoint(url,  params):
+    global token_counter, tokens
+
+    bearer_token = tokens[token_counter]
+    headers = {"Authorization": "Bearer {}".format(bearer_token)}
     response = requests.request("GET", url, headers=headers, params=params)
 
-    if response.status_code == 429:
-        print('429 aqui... tentando outro token')
-        bearer_token_v1 = config['tokens']['APP_BEARER_TOKEN_V1']
-        new_headers = {"Authorization": "Bearer {}".format(bearer_token_v1)}
+    if response.status_code == 429 or response.status_code == 401:
+        token_counter += 1
+        print('429 aqui... tentando outro token', token_counter)
+        try:
+            new_bearer = tokens[token_counter]
+        except IndexError:
+            token_counter = 0
+            new_bearer = tokens[token_counter]
+        new_headers = {"Authorization": "Bearer {}".format(new_bearer)}
         response = requests.request("GET", url, headers=new_headers, params=params)
-        while response.status_code == 429:
-            print('vamo esperar pra ver oq da')
-            sleep(180)
-            response = requests.request("GET", url, headers=new_headers, params=params)
-            print('esperei 3min pra tentar e consegui', response.status_code)
+        while response.status_code == 429 or response.status_code == 401:
+            print('tomei novamente o erro', response.status_code)
+            for i in range(0, len(tokens)):
+                print('meu token é ', i, tokens[i])
+                new_bearer = tokens[i]
+                new_headers = {"Authorization": "Bearer {}".format(new_bearer)}
+                response = requests.request("GET", url, headers=new_headers, params=params)
+                if response.status_code == 200:
+                    print('achei 1 que funciona', i)
+                    token_counter = i
+                    break
+                else:
+                    print('ainda n funciona, espera 2 minuto ai')
+                    sleep(30)
+
         print('a resposta foi', response.status_code)
 
     if response.status_code != 200 and response.status_code != 429:
@@ -39,14 +58,14 @@ def connect_to_endpoint(url, headers, params):
 def user_id(username):
     data_username = username
     get_user_id_url = f'https://api.twitter.com/2/users/by/username/{data_username}'
-    user_lookup_info = connect_to_endpoint(get_user_id_url, headers, params={})
+    user_lookup_info = connect_to_endpoint(get_user_id_url, params={})
 
     return user_lookup_info['data']['id']
 
 
 def get_user_network_v1(user_id, next_page_token=None):
-    url = f'https://api.twitter.com/1.1/friends/ids.json?user_id={user_id}&count=20'
-    friends_ids = connect_to_endpoint(url, headers, params={})
+    url = f'https://api.twitter.com/1.1/friends/ids.json?user_id={user_id}&count=2000'
+    friends_ids = connect_to_endpoint(url, params={})
 
     return friends_ids['ids']
 
@@ -59,7 +78,7 @@ def get_user_network(user_id, next_page_token=None):
         url = f'https://api.twitter.com/2/users/{user_id}/following?max_results=1000'
 
     params = {"user.fields": "created_at"}
-    json_get_response = connect_to_endpoint(url, headers, params)
+    json_get_response = connect_to_endpoint(url, params)
     json_get_response['main_node'] = {
         "user_id": user_id,
     }
@@ -89,16 +108,22 @@ def write_network_json(ego_network, username):
     json_file.write(json_string)
     json_file.close()
 
-    nx.draw(ego_network)
-    plt.savefig(f'rede_exemplos/nt_{username}.png')
+    # nx.draw(ego_network)
+    # plt.savefig(f'rede_exemplos/nt_{username}.png')
 
 
 if __name__ == '__main__':
     config = configparser.RawConfigParser()
     config.read('config.cfg')
 
-    bearer_token = config['tokens']['APP_BEARER_TOKEN']
-    headers = {"Authorization": "Bearer {}".format(bearer_token)}
+    tokens = [config['tokens']['APP_BEARER_TOKEN'],
+              config['tokens']['APP_BEARER_TOKEN_A0'],
+              config['tokens']['APP_BEARER_TOKEN_A1'],
+              config['tokens']['APP_BEARER_TOKEN_A2'],
+              config['tokens']['APP_BEARER_TOKEN_A3']]
+
+    # bearer_token = config['tokens']['APP_BEARER_TOKEN']
+    token_counter = 0
     user_id = user_id('yayboechat')
 
     ego_network = nx.Graph()
@@ -119,5 +144,5 @@ if __name__ == '__main__':
 
 
 
-    # print(ego_network.adj)
+
 
